@@ -6,74 +6,70 @@
 /*   By: jperez-s <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/10 16:24:13 by jperez-s          #+#    #+#             */
-/*   Updated: 2019/11/23 12:31:13 by jperez-s         ###   ########.fr       */
+/*   Updated: 2019/11/23 16:08:25 by jperez-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "libft.h"
 
-static	int		ft_nbw(const char *str, char c)
+static char		**ft_mallocsize(char const *s, char c)
 {
-	int word;
+	char	*aux;
+	char	**aux2;
+	int		fil;
 
-	word = 0;
-	if (*str != c && *str)
+	fil = 0;
+	aux = (char*)s;
+	while (*aux)
 	{
-		str++;
-		word++;
+		while (*aux == c)
+			aux++;
+		if (*aux != '\0')
+			fil++;
+		while (*aux != c && *aux)
+			aux++;
 	}
-	while (*str)
-	{
-		while (*str == c)
-		{
-			str++;
-			if (*str != c && *str)
-				word++;
-		}
-		str++;
-	}
-	return (word);
+	aux2 = (char**)malloc((fil + 1) * sizeof(char*));
+	if (aux2 == NULL)
+		return (NULL);
+	aux2[fil] = NULL;
+	return (aux2);
 }
 
-static	int		ft_ln(const char *str, char c)
+static char		**ft_copy(const char *s, char c)
 {
-	int count;
+	size_t	len;
+	char	**tab;
+	int		i;
 
-	count = 0;
-	while (*str != c && *str)
+	i = 0;
+	len = 0;
+	tab = ft_mallocsize(s, c);
+	if (tab == NULL)
+		return (NULL);
+	while (*s)
 	{
-		count++;
-		str++;
+		while (*s == c)
+			s++;
+		if (*s != '\0')
+		{
+			while (s[len] != c && s[len])
+				len++;
+			tab[i++] = ft_substr(s, 0, len);
+			s += len;
+		}
+		len = 0;
 	}
-	return (count);
+	tab[i] = NULL;
+	return (tab);
 }
 
 char			**ft_split(char const *s, char c)
 {
-	int		j;
-	int		i;
-	char	**spt;
+	char **tab;
 
-	j = 0;
-	i = 0;
-	if (!s || (!(spt = (char **)malloc(sizeof(char *) * (ft_nbw(s, c) + 1)))))
+	if (!s)
 		return (NULL);
-	while (*s)
-	{
-		while (*s == c && *s)
-			s++;
-		if (*s != c && *s)
-		{
-			if (!(spt[j] = (char *)malloc(sizeof(char) * (ft_ln(s, c) + 1))))
-				return (NULL);
-			while (*s && *s != c)
-				spt[j][i++] = (char)*s++;
-			spt[j][i] = '\0';
-			j++;
-			i = 0;
-		}
-	}
-	spt[j] = NULL;
-	return (spt);
+	tab = ft_copy(s, c);
+	return (tab);
 }

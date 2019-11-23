@@ -6,7 +6,7 @@
 /*   By: jperez-s <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/10 17:03:29 by jperez-s          #+#    #+#             */
-/*   Updated: 2019/11/23 12:26:36 by jperez-s         ###   ########.fr       */
+/*   Updated: 2019/11/23 16:52:21 by jperez-s         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,49 +15,40 @@
 #include <stdio.h>
 #include <unistd.h>
 
-static int		len(long nb)
+static void		isneg(int *nb, int *neg)
 {
-	int		len;
-
-	len = 0;
-	if (nb < 0)
+	if (*nb < 0)
 	{
-		nb = nb * -1;
-		len++;
+		*nb *= -1;
+		*neg = 1;
 	}
-	while (nb > 0)
-	{
-		nb = nb / 10;
-		len++;
-	}
-	return (len);
 }
 
 char			*ft_itoa(int nb)
 {
 	char	*str;
-	long	n;
-	int		i;
+	int		n;
+	int		len;
+	int		neg;
 
 	n = nb;
-	i = len(n);
-	if (!(str = (char*)malloc(i + 1)))
+	len = 2;
+	neg = 0;
+	if (nb == -2147483648)
+		return (ft_strdup("-2147483648"));
+	isneg(&nb, &neg);
+	while (n /= 10)
+		len++;
+	len += neg;
+	if (!(str = (char*)malloc(len)))
 		return (NULL);
-	str[i--] = '\0';
-	if (n == 0)
+	str[--len] = '\0';
+	while (len--)
 	{
-		str[0] = 48;
-		return (str);
+		str[len] = nb % 10 + '0';
+		nb = nb / 10;
 	}
-	if (n < 0)
-	{
+	if (neg)
 		str[0] = '-';
-		n = n * -1;
-	}
-	while (n > 0)
-	{
-		str[i--] = 48 + (n % 10);
-		n = n / 10;
-	}
 	return (str);
 }
